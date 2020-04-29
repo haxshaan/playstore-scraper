@@ -1,5 +1,6 @@
 A **Google Play store scraper** which crawls google play store and fetched all the package ids of the application and store in the database or csv file.
 
-Edit **config.ini** file and run.
+- Edit **config.ini** file and run.
 
-
+- Install Requirements using pip:
+>`pip install -r requirements.txt`
