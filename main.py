@@ -45,12 +45,14 @@ class PlayCrawl:
             except Exception as e:
                 print("An exception occurred: ", e)
                 continue
+        print(f"\nFetched {len(self.data)} package names.")
 
-    def crawl_all(self):  # 1
-        search_key = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
-                      'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-                      't', 'u', 'v', 'w', 'x', 'y', 'z']
-        self.fetch_data(search_key)
+    def crawl_all(self, keys):
+        bad_chars = ["'", "(", ")", "[", "]", '"']
+        my_key = ''.join(i for i in keys if i not in bad_chars)
+        my_key.replace(', ', ',').replace(' ,', ',')
+        keywords = my_key.replace(', ', ',').replace(' ,', ',').split(',')
+        self.fetch_data(keywords)
 
     def save_to_csv(self):
         print(f"\nSaving into CSV file")
@@ -65,31 +67,33 @@ class PlayCrawl:
         tables = [item.decode() for item in [item for item in self.cursor.fetchall()[0]]]
 
         if table in tables:
+            self.cursor.execute("SELECT * FROM playstore")
+            current_data = set([i[0] for i in self.cursor.fetchall()])
+            final_data = [j for j in list(self.data) if j not in current_data]
+            print(f"\nFound {len(self.data) - len(current_data)} duplicates, discarding.")
+
             try:
-                for i in list(self.data):
+                for i in list(final_data):
                     insert_statement = f"INSERT INTO {table_name} ({column}) VALUES ('{i}')"
                     self.cursor.execute(insert_statement)
-                print("Successfully saved the records into database")
+
             except Error as ex:
                 print('Error: ', ex)
 
             finally:
-                if self.connection.is_connected():
-                    # cursor.execute('SELECT * FROM playstore')
-                    # print(cursor.fetchall())
-                    self.cursor.close()
-                    self.connection.close()
-                    print("MySQL connection is closed")
+                self.connection.commit()
+                print(f"\nSuccessfully saved {len(final_data)} number of new records into database")
+                # cursor.execute('SELECT * FROM playstore')
+                # print(cursor.fetchall())
+                print("\nClosing MySQL connection")
+                self.cursor.close()
+                self.connection.close()
+
         else:
-            print(f"Table named {table} does not exist")
+            print(f"\nTable named {table} does not exist")
 
 
 if __name__ == "__main__":
-    print("The Play Store crawler Bot has started!\n")
-    moment = process_time()
-    app = PlayCrawl()
-    app.crawl_all()
-    print(f"All done!\nTime elapsed: {process_time() - moment}")
 
     parser = ConfigParser()
     parser.read('config.ini')
@@ -103,12 +107,19 @@ if __name__ == "__main__":
             table_name = parser['MYSQL']['table']
             column_name = 'package_name'
             method = parser['SAVE']['method']
+            key = parser['CRAWLER']['keywords']
         except Exception as e:
             print(f"Config file is broken! Please check. Error: {e}")
             raise SystemExit(0)
     else:
         print("Config file is broken! Please check.")
         raise SystemExit(0)
+
+    print("The Play Store crawler Bot has started!\n")
+    moment = process_time()
+    app = PlayCrawl()
+    app.crawl_all(keys=key)
+    print(f"\nTime taken: {process_time() - moment} seconds")
 
     if method == 'csv':
         app.save_to_csv()
@@ -117,3 +128,4 @@ if __name__ == "__main__":
         app.save_to_mysql(table_name, column_name)
     else:
         print(f"Unknown SAVE method found : {method}, please check config file.")
+    print("\nThanks for using Play store crawler!")
