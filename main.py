@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     parser = ConfigParser()
     parser.read('config.ini')
-    if parser['MYSQL'] and parser['SAVE']:
+    if parser['MYSQL'] and parser['SAVE'] and parser['CRAWLER']:
         try:
             host = parser['MYSQL']['host']
             port = parser['MYSQL']['port']
