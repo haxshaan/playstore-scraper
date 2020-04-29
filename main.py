@@ -18,7 +18,7 @@ class PlayCrawl:
             # engine = create_engine(f"mysql+mysqlconnector://{user}:{passwd}@{host}:{port}/{database}")
             self.cursor = self.connection.cursor()
         except Error as e:
-            print("Can't connect to database!")
+            print("Can't connect to database!, error received: ", e)
             raise SystemExit(0)
 
     def fetch_data(self, alphabet_list):
@@ -83,8 +83,6 @@ class PlayCrawl:
             finally:
                 self.connection.commit()
                 print(f"\nSuccessfully saved {len(final_data)} number of new records into database")
-                # cursor.execute('SELECT * FROM playstore')
-                # print(cursor.fetchall())
                 print("\nClosing MySQL connection")
                 self.cursor.close()
                 self.connection.close()
