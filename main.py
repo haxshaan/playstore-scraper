@@ -65,6 +65,7 @@ class PlayCrawl:
         table_fetch = f"SHOW TABLES FROM {database}"
         self.cursor.execute(table_fetch)
         table_query = [item for item in self.cursor.fetchall()[0]]
+        print(type(table_query[0]))
         tables = [i.decode() if type(table_query[0] == bytearray) else i for i in table_query]
 
         if table in tables:
