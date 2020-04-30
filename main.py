@@ -67,14 +67,14 @@ class PlayCrawl:
         tables = [item.decode() for item in [item for item in self.cursor.fetchall()[0]]]
 
         if table in tables:
-            self.cursor.execute("SELECT * FROM playstore")
+            self.cursor.execute(f"SELECT * FROM {table}")
             current_data = set([i[0] for i in self.cursor.fetchall()])
             final_data = [j for j in list(self.data) if j not in current_data]
             print(f"\nFound {len(self.data) - len(current_data)} duplicates, discarding.")
 
             try:
                 for i in list(final_data):
-                    insert_statement = f"INSERT INTO {table_name} ({column}) VALUES ('{i}')"
+                    insert_statement = f"INSERT INTO {table} ({column}) VALUES ('{i}')"
                     self.cursor.execute(insert_statement)
 
             except Error as ex:
