@@ -103,7 +103,7 @@ if __name__ == "__main__":
             passwd = parser['MYSQL']['password']
             database = parser['MYSQL']['database']
             table_name = parser['MYSQL']['table']
-            column_name = 'package_name'
+            column_name = parser['MYSQL']['column']
             method = parser['SAVE']['method']
             key = parser['CRAWLER']['keywords']
         except Exception as e:
