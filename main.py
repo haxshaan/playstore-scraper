@@ -71,9 +71,8 @@ class PlayCrawl:
             self.cursor.execute(f"SELECT {column} FROM {table}")
             current_data = set([i[0] for i in self.cursor.fetchall()])
             final_data = [j for j in list(self.data) if j not in current_data]
-
             if final_data:
-                print(f"\nFound {len(self.data) - len(current_data)} duplicates, discarding.")
+                print(f"\nFound {len(self.data - current_data)} duplicates, discarding.")
                 try:
                     for i in list(final_data):
                         insert_statement = f"INSERT INTO {table} ({column}) VALUES ('{i}')"
