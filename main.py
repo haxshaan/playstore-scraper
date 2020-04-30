@@ -71,22 +71,25 @@ class PlayCrawl:
             self.cursor.execute(f"SELECT * FROM {table}")
             current_data = set([i[0] for i in self.cursor.fetchall()])
             final_data = [j for j in list(self.data) if j not in current_data]
-            print(f"\nFound {len(self.data) - len(current_data)} duplicates, discarding.")
 
-            try:
-                for i in list(final_data):
-                    insert_statement = f"INSERT INTO {table} ({column}) VALUES ('{i}')"
-                    self.cursor.execute(insert_statement)
+            if final_data:
+                print(f"\nFound {len(self.data) - len(current_data)} duplicates, discarding.")
+                try:
+                    for i in list(final_data):
+                        insert_statement = f"INSERT INTO {table} ({column}) VALUES ('{i}')"
+                        self.cursor.execute(insert_statement)
 
-            except Error as ex:
-                print('Error: ', ex)
+                except Error as ex:
+                    print('Error: ', ex)
 
-            finally:
-                self.connection.commit()
-                print(f"\nSuccessfully saved {len(final_data)} number of new records into database")
-                print("\nClosing MySQL connection")
-                self.cursor.close()
-                self.connection.close()
+                finally:
+                    self.connection.commit()
+                    print(f"\nSuccessfully saved {len(final_data)} number of new records into database")
+                    print("\nClosing MySQL connection")
+            else:
+                print("No new record found!")
+            self.cursor.close()
+            self.connection.close()
 
         else:
             print(f"\nTable named {table} does not exist")
