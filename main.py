@@ -17,8 +17,8 @@ class PlayCrawl:
             self.connection = connect(host=hostname, user=username, passwd=passw, db=db_name)
             # engine = create_engine(f"mysql+mysqlconnector://{user}:{passwd}@{host}:{port}/{database}")
             self.cursor = self.connection.cursor()
-        except Error as e:
-            print("Can't connect to database!, error received: ", e)
+        except Error as ex:
+            print("Can't connect to database!, error received: ", ex)
             raise SystemExit(0)
 
     def fetch_data(self, alphabet_list):
@@ -42,8 +42,8 @@ class PlayCrawl:
                     my_id = links_with_text[0].split('=')[1]
                     self.data.add(my_id)
 
-            except Exception as e:
-                print("An exception occurred: ", e)
+            except Exception as ex:
+                print("An exception occurred: ", ex)
                 continue
         print(f"\nFetched {len(self.data)} package names.")
 
@@ -64,7 +64,8 @@ class PlayCrawl:
         print(f"\nSaving into MYSQL DATABASE")
         table_fetch = f"SHOW TABLES FROM {database}"
         self.cursor.execute(table_fetch)
-        tables = [item.decode() for item in [item for item in self.cursor.fetchall()[0]]]
+        table_query = [item for item in self.cursor.fetchall()[0]]
+        tables = [i.decode() for i in table_query]
 
         if table in tables:
             self.cursor.execute(f"SELECT * FROM {table}")
