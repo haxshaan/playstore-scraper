@@ -66,10 +66,10 @@ class PlayCrawl:
         self.cursor.execute(table_fetch)
         table_query = [item for item in self.cursor.fetchall()[0]]
         print(type(table_query[0]))
-        if type(table_query[0] == bytearray):
-            tables = [i.decode() for i in table_query]
-        else:
-            tables = table_query
+        # if type(table_query[0] == bytearray):
+        #     tables = [i.decode() for i in table_query]
+        # else:
+        tables = table_query
 
         if table in tables:
             self.cursor.execute(f"SELECT * FROM {table}")
